@@ -38,47 +38,110 @@ def selectfile():
         links = file.read()
   
 
+
+def select_one(choice):
+    # Логика исключения: оставляем только одну галочку
+    if choice != "144p":  cb1.deselect()
+    if choice != "360p":  cb2.deselect()
+    if choice != "480p":  cb3.deselect()
+    if choice != "720p":  cb4.deselect()
+    if choice != "1080p": cb5.deselect()
+    if choice != "mp3":   cb6.deselect()
+
+def get_quality():
+    # Проверяем, какой чекбокс нажат, и возвращаем параметры
+    if cb1.get(): return "bv[height<=144][vcodec^=avc1]+ba[ext=m4a]/b[height<=144][ext=mp4]", "mp4"
+    if cb2.get(): return "bv[height<=360][vcodec^=avc1]+ba[ext=m4a]/b[height<=360][ext=mp4]", "mp4"
+    if cb3.get(): return "bv[height<=480][vcodec^=avc1]+ba[ext=m4a]/b[height<=480][ext=mp4]", "mp4"
+    if cb4.get(): return "bv[height<=720][vcodec^=avc1]+ba[ext=m4a]/b[height<=720][ext=mp4]", "mp4"
+    if cb5.get(): return "bv[height<=1080][vcodec^=avc1]+ba[ext=m4a]/b[height<=1080][ext=mp4]", "mp4"
+    if cb6.get(): return "bestaudio/best", "mp3"
+    return "bestaudio/best", "mp3" # По умолчанию
+
 def space():
-    os.makedirs("Download", exist_ok=True)#Создание папки для сохранения музыки
-    prop = {'writethumbnail':True,
-            'format':'bestaudio/best',
-            'postprocessors':[{'key':'FFmpegExtractAudio','preferredcodec':'mp3','preferredquality':'320'},
-                {'key':"EmbedThumbnail"},
-                {'key':"FFmpegMetadata"}],
-            'download_archive':rf'{path_dir.get()}/archive.txt',
-            'ffmpeg_location':r'C:\Users\egamd\Downloads\ffmpeg\bin\ffmpeg.exe',
-            'noplaylist':False,
-            'outtmpl':rf'{path_dir.get()}/%(title)s.%(ext)s',
-            'user_agent':'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0',
-            'cookies':'VK.txt' , 
-            'retries': 10,
-            'nocheckcertificate': True}
+    os.makedirs(rf"{path_dir.get()}", exist_ok=True)
+    
+    q_val, ext_type = get_quality() 
+    
+    # Базовые постпроцессоры (превью и метаданные)
+    post_procs = [
+        {'key': "EmbedThumbnail"}, 
+        {'key': "FFmpegMetadata"}
+    ]
+    
+    # Если выбран режим mp3, добавляем извлечение аудио
+    if ext_type == "mp3":
+        post_procs.insert(0, {
+            'key': 'FFmpegExtractAudio',
+            'preferredcodec': 'mp3',
+            'preferredquality': '320',
+        })
+
+    prop = {
+        'writethumbnail': True,
+        'format': q_val,
+        'retries': 15,
+        'fragment_retries': 15,
+        'socket_timeout': 30,              # Ждать ответа сервера 30 секунд
+        'retry_sleep_functions': {'http': lambda n: 5},
+        'ignoreerrors': True,              # Чтобы один битый файл не ломал всю очередь
+        'postprocessors': post_procs,
+        'ffmpeg_location': r'C:\Users\egamd\Downloads\ffmpeg\bin\ffmpeg.exe',
+        'outtmpl': rf'{path_dir.get()}/%(title)s.%(ext)s',
+        'cookies': 'VK.txt',
+        'nocheckcertificate': True,        # Помогает при проблемах с SSL/прокси
+    }
+    
     Request = DownloadManager(prop)
+    
+    # Очистка ссылок от пустых строк
     if url.get():
-        link = url.get().split("\n")
-        Request.get_provide(link)
+        links_list = [l.strip() for l in url.get().split("\n") if l.strip()]
+        Request.get_provide(links_list)
     if links != "":
-        Request.get_provide(links.split("\n"))
+        links_list = [l.strip() for l in links.split("\n") if l.strip()]
+        Request.get_provide(links_list)
 
-
-sidebarleft = customtkinter.CTkFrame(app,width=400, corner_radius=15)
+# --- ВИДЖЕТЫ ---
+sidebarleft = customtkinter.CTkFrame(app, width=600, corner_radius=15)
 path_dir = customtkinter.CTkEntry(sidebarleft, placeholder_text="Название папки")
 url = customtkinter.CTkEntry(sidebarleft, placeholder_text="Ссылка на музыку")
-File_status = customtkinter.CTkLabel(sidebarleft , text = "Nonefile" , wraplength=250)
-Download_status = customtkinter.CTkLabel(sidebarleft, text = "" , wraplength=250)
-filesk = customtkinter.CTkButton(sidebarleft, text="Выберите файл", command=selectfile)
-download = customtkinter.CTkButton(sidebarleft,text=("Скачать") , command = space)    
+
+# Фрейм для чекбоксов качества
+quality_frame = customtkinter.CTkFrame(sidebarleft)
+
+cb1 = customtkinter.CTkCheckBox(quality_frame, text="144p", command=lambda: select_one("144p"), width=80)
+cb2 = customtkinter.CTkCheckBox(quality_frame, text="360p", command=lambda: select_one("360p"), width=80)
+cb3 = customtkinter.CTkCheckBox(quality_frame, text="480p", command=lambda: select_one("480p"), width=80)
+cb4 = customtkinter.CTkCheckBox(quality_frame, text="720p", command=lambda: select_one("720p"), width=80)
+cb5 = customtkinter.CTkCheckBox(quality_frame, text="1080p", command=lambda: select_one("1080p"), width=80)
+cb6 = customtkinter.CTkCheckBox(quality_frame, text="mp3", command=lambda: select_one("mp3"), width=80)
+cb6.select() # Ставим mp3 по умолчанию
+
+# Остальные виджеты
+Download_status = customtkinter.CTkLabel(sidebarleft, text="--", wraplength=250)
+File_status = customtkinter.CTkLabel(sidebarleft, text="Nonefile", wraplength=250)
+filesk = customtkinter.CTkButton(sidebarleft, text="Выбрать файл", command=selectfile)
+download = customtkinter.CTkButton(sidebarleft, text="Скачать", command=space)
+
 if __name__ == "__main__":
-        sidebarleft.pack(side="left")
-        url.pack(pady=20)
-        path_dir.pack(pady=20)
-        File_status.pack(pady=50,side='right')
-        Download_status.pack(pady=50,side='left')
-        download.pack(pady=50,side='left')
-        filesk.pack(pady=50,side='right')
-        
-        app.mainloop()
+    sidebarleft.pack(fill='x', padx=10, pady=10)
+    url.pack(pady=5, fill='x', padx=10)
+    path_dir.pack(pady=5, fill='x', padx=10)
+    
+    # Размещаем чекбоксы в сетку внутри их фрейма
+    quality_frame.pack(pady=10)
+    cb1.grid(row=0, column=0, padx=5, pady=2)
+    cb2.grid(row=0, column=1, padx=5, pady=2)
+    cb3.grid(row=1, column=0, padx=5, pady=2)
+    cb4.grid(row=1, column=1, padx=5, pady=2)
+    cb5.grid(row=2, column=0, padx=5, pady=2)
+    cb6.grid(row=2, column=1, padx=5, pady=2)
 
+    filesk.pack(pady=5, side='left', padx=10)
+    File_status.pack(pady=5, side='left')
+    download.pack(pady=5, side="right", padx=10)
+    Download_status.pack(pady=5, side='right')
 
-            
-            
+    app.geometry("600x450") # Увеличил высоту под чекбоксы
+    app.mainloop()
