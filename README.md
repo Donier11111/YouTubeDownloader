@@ -5,11 +5,11 @@
 ___
 Установка разом: 
 ```bash
-pip install pygame  yt_dlp  customtkinter mutagen
+pip install pygame-ce yt_dlp  customtkinter mutagen
 ````
 Устанока по одной:
 ```bash
-pip install pygame
+pip install pygame-ce
 pip install yt_dlp
 pip install customtkinter
 pip install mutagen
