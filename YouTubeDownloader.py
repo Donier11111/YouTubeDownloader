@@ -200,12 +200,12 @@ def space():
         'socket_timeout': 30,
         'postprocessors': post_procs,
         'progress_hooks': [progress_hook],
-        'ffmpeg_location': rf"/home/camamber/HIFI/ffmpeg/ffmpeg",
+        'ffmpeg_location': r"C:\ffmpeg\bin\ffmpeg.exe",  # <-- свой путь
         'outtmpl': rf'{folder_name}/%(title)s.%(ext)s',
         'nocheckcertificate': True,
         'user-agent':'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:148.0) Gecko/20100101 Firefox/148.0',
         'download_archive':rf'{folder_name}/archive.txt',
-        'cookies':rf'per.txt',
+        'cookies':rf'Cookies.txt', # <-- свой путь
         'ignoreerrors':True,
     }
 
