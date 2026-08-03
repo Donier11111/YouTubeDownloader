@@ -10,13 +10,7 @@ pip install pygame  yt_dlp  customtkinter mutagen
 Устанока по одной:
 ```bash
 pip install pygame
-```
-```bash
 pip install yt_dlp
-``````
-```bash
 pip install customtkinter
-```
-```bash
 pip install mutagen
 ``````
