@@ -1,6 +1,6 @@
 # YouTubeDownloader
 Установщик видео и аудио с YouTube и иных стриммингов.
-Для работы кода потребуется python 3.14+.
+Для работы кода потребуется [python 3.14+](https://www.python.org/downloads/).
 Пакет библиотек: pygame , customtkinter , yt_dlp , mutagen
 ___
 Установка разом: 
