@@ -5,15 +5,24 @@
 ___
 Установка разом: 
 ```bash
-pip install pygame-ce yt_dlp  customtkinter mutagen
+pip install yt_dlp  customtkinter mutagen
 ````
 Устанока по одной:
 ```bash
-pip install pygame-ce
+
 pip install yt_dlp
 pip install customtkinter
 pip install mutagen
-`````
+```
+
+``
+|  | Название | Назначение |
+|--|----------|------------|
+| [<img src="https://www.python.org/static/favicon.ico" width="16">](https://www.python.org/downloads/) | [Python 3.14+](https://www.python.org/downloads/) | Интерпретатор |
+| [<img src="https://raw.githubusercontent.com/yt-dlp/yt-dlp/master/.github/assets/icon.svg" width="16">](https://github.com/yt-dlp/yt-dlp) | [yt-dlp](https://github.com/yt-dlp/yt-dlp) | Загрузка контента |
+| [<img src="https://ffmpeg.org/favicon.ico" width="16">](https://ffmpeg.org/) | [FFmpeg](https://ffmpeg.org/) | Конвертация аудио/видео |
+| [<img src="https://customtkinter.tomschimansky.com/img/customtkinter_icon.png" width="16">](https://github.com/TomSchimansky/CustomTkinter) | [CustomTkinter](https://github.com/TomSchimansky/CustomTkinter) | Графический интерфейс |
+
 ___
 Так же понадобиться программа ffmpeg [ссылка](https://www.ffmpeg.org/). Установленные пакеты нужно будет положить в одну папку с python файлом.
 В строке 203 нужно прописать путь к ffmpeg.exe(если windows) или просто ffmpeg(если unix подобная система).
