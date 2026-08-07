@@ -5,7 +5,7 @@ from tkinter import filedialog
 import yt_dlp
 import threading
 import sys
-from pygame import mixer
+
 
 save =""
 
@@ -27,86 +27,7 @@ logging.basicConfig(
 )
 log = logging.getLogger()
 
-class MusicPlayer:
-    def __init__(self, scrollside):
-        self.scroll = scrollside
-        self.queue = []      
-        self.current_index = 0
-        self.paused = False
-        self.current_file = None
-        self.song_widgets = [] 
 
-    def play(self, file_path):
-        if not file_path: return
-        if file_path in self.queue:
-            self.current_index = self.queue.index(file_path)
-            
-        try:
-            mixer.music.stop()
-            mixer.music.load(file_path)
-            mixer.music.play()
-            self.current_file = file_path
-            self.paused = False
-            self.highlight_current_track()
-        except Exception as e:
-            log.error(f"Ошибка воспроизведения: {e}")
-
-    def highlight_current_track(self):
-        for i, frame in enumerate(self.song_widgets):
-            if i == self.current_index and self.current_file:
-                frame.configure(fg_color=COLOR_HIGHLIGHT)
-            else:
-                frame.configure(fg_color=COLOR_FRAME)
-
-    def play_next(self):
-        if not self.queue: return
-        self.current_index = (self.current_index + 1) % len(self.queue)
-        self.play(self.queue[self.current_index])
-
-    def play_back(self):
-        if not self.queue: return
-        self.current_index = (self.current_index - 1) % len(self.queue)
-        self.play(self.queue[self.current_index])
-
-    def toggle_pause(self):
-        if not self.current_file: return
-        if self.paused:
-            mixer.music.unpause()
-            self.paused = False
-        else:
-            mixer.music.pause()
-            self.paused = True
-
-    def start_from_beginning(self):
-        if self.queue: self.play(self.queue[0])
-
-    def paint(self):
-        for child in self.scroll.winfo_children():
-            child.destroy()
-        
-        global songs
-        self.queue = list(songs) 
-        self.song_widgets = [] 
-        
-        for path in self.queue:
-            song_name = os.path.basename(path)
-            song_frame = customtkinter.CTkFrame(self.scroll, fg_color=COLOR_FRAME)
-            song_frame.pack(fill="x", padx=5, pady=2)
-            self.song_widgets.append(song_frame)
-            
-            lbl = customtkinter.CTkLabel(song_frame, text=song_name, text_color=COLOR_TEXT, anchor="w")
-            lbl.pack(side="left", padx=10, fill="x", expand=True)
-            
-            btn = customtkinter.CTkButton(
-                song_frame, text="▶", width=40, 
-                fg_color=COLOR_ACCENT, hover_color="#89B4FA", text_color=COLOR_BG,
-                command=lambda p=path: self.play(p)
-            )
-            btn.pack(side="right", padx=5)
-        self.highlight_current_track()
-
-
-songs = []
 links_from_file = ""
 
 def resource_path(relative_path):
@@ -116,20 +37,9 @@ def resource_path(relative_path):
         base_path = os.path.abspath(".")
     return os.path.join(base_path, relative_path)
 
-def folder_scaner(folder_path):
-    global songs 
-    songs.clear()
-    if os.path.exists(folder_path):
-        for i in os.listdir(folder_path):
-            if i.endswith(".mp3" ) and i.endswith(".flac" ) :
-                songs.append(os.path.join(folder_path, i).replace("\\", "/"))
-    player.paint()
 
-def choise_folder():
-    folder = filedialog.askdirectory(title="Выберите папку с музыкой")
-    if folder:
-        Folder_status.configure(text=folder)
-        folder_scaner(folder)
+
+
 def choise_save():
     global save
     app.after(0, lambda: path_dir.configure(text=f"Папка сохранения"))
@@ -191,7 +101,7 @@ def space():
             
         })
 
-    prop = {
+   prop = {
         'writethumbnail': True,
         'audio_quality': 0,
         'format': q_val,
@@ -203,7 +113,6 @@ def space():
         'ffmpeg_location': r"C:\ffmpeg\bin\ffmpeg.exe",  # <-- свой путь
         'outtmpl': rf'{folder_name}/%(title)s.%(ext)s',
         'nocheckcertificate': True,
-        'user-agent':'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:148.0) Gecko/20100101 Firefox/148.0',
         'download_archive':rf'{folder_name}/archive.txt',
         'cookies':rf'Cookies.txt', # <-- свой путь
         'ignoreerrors':True,
@@ -237,7 +146,7 @@ app = customtkinter.CTk()
 app.title("YouTube Frosty Downloader")
 app.geometry("600x650")
 app.configure(fg_color=COLOR_BG)
-mixer.init()
+
 
 tabview = customtkinter.CTkTabview(app, fg_color=COLOR_FRAME, 
                                    segmented_button_selected_color=COLOR_ACCENT,
@@ -245,7 +154,7 @@ tabview = customtkinter.CTkTabview(app, fg_color=COLOR_FRAME,
                                    segmented_button_unselected_hover_color=COLOR_HIGHLIGHT)
 tabview.pack(padx=20, pady=20, fill="both", expand=True)
 tabview.add("Скачать трек")
-tabview.add("Библиотека")
+
 
 # Вкладка Скачать
 tab_dl = tabview.tab("Скачать трек")
@@ -276,30 +185,7 @@ Download_status.pack(pady=5)
 File_status = customtkinter.CTkLabel(tab_dl, text="Файл не выбран", font=("Arial", 11, "italic"))
 File_status.pack()
 
-# Вкладка Библиотека
-tab_lib = tabview.tab("Библиотека")
-lib_top = customtkinter.CTkFrame(tab_lib, fg_color="transparent")
-lib_top.pack(fill="x", pady=10)
-Folder_status = customtkinter.CTkLabel(lib_top, text="Выберите папку...", text_color=COLOR_TEXT, wraplength=250)
-Folder_status.pack(side="left", padx=10)
-customtkinter.CTkButton(lib_top, text="📁 Обзор", width=90, fg_color=COLOR_HIGHLIGHT, command=choise_folder).pack(side="right", padx=5)
-customtkinter.CTkButton(lib_top, text="🔄 Обновить", width=90, fg_color=COLOR_HIGHLIGHT, command=lambda: player.paint()).pack(side="right", padx=5)
-
-slidebar = customtkinter.CTkScrollableFrame(tab_lib, fg_color=COLOR_BG, border_color=COLOR_HIGHLIGHT, border_width=1)
-slidebar.pack(fill="both", expand=True, padx=10, pady=10)
-player = MusicPlayer(slidebar)
-
-ctrls = customtkinter.CTkFrame(tab_lib, fg_color=COLOR_HIGHLIGHT, corner_radius=10)
-ctrls.pack(fill="x", padx=10, pady=10)
-customtkinter.CTkButton(ctrls, text="⏮", width=40, fg_color="transparent", command=player.play_back).pack(side="left", padx=10)
-customtkinter.CTkButton(ctrls, text="⏸ / ▶", width=80, fg_color=COLOR_ACCENT, text_color=COLOR_BG, command=player.toggle_pause).pack(side="left", padx=5)
-customtkinter.CTkButton(ctrls, text="⏭", width=40, fg_color="transparent", command=player.play_next).pack(side="left", padx=5)
-customtkinter.CTkButton(ctrls, text="Сначала", width=80, fg_color="transparent", border_width=1, command=player.start_from_beginning).pack(side="right", padx=10)
 
 if __name__ == "__main__":
-    def check_music():
-        if not mixer.music.get_busy() and player.current_file and not player.paused:
-            player.play_next()
-        app.after(1000, check_music)
-    check_music()
+    
     app.mainloop()
