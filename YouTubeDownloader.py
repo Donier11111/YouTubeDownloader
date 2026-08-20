@@ -9,12 +9,12 @@ import sys
 
 save =""
 
-COLOR_BG = "#160d0d"         # Глубокий темный
-COLOR_FRAME = "#1e1313"      # Холодный синий фрейм
-COLOR_HIGHLIGHT = "#2a1819"  # Цвет активного трека
-COLOR_ACCENT = "#1a1010"     # Ледяной голубой
-COLOR_TEXT = "#f2aba1"       # Светлый текст
-COLOR_DANGER = "#F7768E"     # Красный 
+COLOR_BG = "#160d0d"         
+COLOR_FRAME = "#1e1313"      
+COLOR_HIGHLIGHT = "#2a1819"  
+COLOR_ACCENT = "#1a1010"   
+COLOR_TEXT = "#f2aba1"      
+COLOR_DANGER = "#F7768E"   
 
 # Настройка логирования
 logging.basicConfig(

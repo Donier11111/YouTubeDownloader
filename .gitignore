@@ -2,6 +2,7 @@
 *.log
 *.cfg
 *.code-workspace
+*.log
 /ffmpeg
 /venv
 /__pycache__
