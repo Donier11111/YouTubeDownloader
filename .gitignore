@@ -1,4 +1,8 @@
 *.txt
 *.log
 *.cfg
-cookies/
+*.code-workspace
+/ffmpeg
+/venv
+/__pycache__
+/m
