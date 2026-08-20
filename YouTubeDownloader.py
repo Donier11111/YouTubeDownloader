@@ -110,11 +110,11 @@ def space():
         'socket_timeout': 30,
         'postprocessors': post_procs,
         'progress_hooks': [progress_hook],
-        'ffmpeg_location': rf"/home/camamber/HIFI/ffmpeg/ffmpeg",
+        'ffmpeg_location': rf"ffmpeg/ffmpeg", #<<---Путь к ffmpeg
         'outtmpl': rf'{folder_name}/%(title)s.%(ext)s',
         'nocheckcertificate': True,
         'download_archive':rf'{folder_name}/archive.txt',
-        'cookiefile': 'per.txt',
+        'cookiefile': 'per.txt',#<<----Путь к файлам cookie
         'ignoreerrors':True,
         'add_metadata': True,
         'extractor_args': {
